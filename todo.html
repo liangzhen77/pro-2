@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tasks</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --leather-color: #5D4037;
+            --leather-dark: #3E2723;
+            --paper-color: #fdfbf7;
+            --line-color: #aebcd6;
+            --margin-color: #e57373;
+            --ink-color: #2c3e50;
+            --wood-dark: #3e2723;
+            --wood-light: #5d4037;
+        }
+
+        * {
+            box-sizing: border-box;
+            outline: none;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Caveat', cursive;
+            background-color: #2c1e18;
+            /* Wood Texture via CSS */
+            background-image:
+                repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.02) 0px, rgba(255, 255, 255, 0.02) 2px, transparent 2px, transparent 10px),
+                linear-gradient(to bottom, #3E2723, #281813);
+            overflow: hidden;
+        }
+
+        /* Leather Notebook Cover */
+        .notebook {
+            width: 90%;
+            max-width: 500px;
+            height: 80vh;
+            background-color: var(--leather-color);
+            border-radius: 15px 25px 25px 15px;
+            position: relative;
+            box-shadow:
+                inset 10px 0 20px rgba(0, 0, 0, 0.3),
+                /* Spine shadow */
+                inset -5px 0 10px rgba(255, 255, 255, 0.1),
+                /* Highlight */
+                15px 20px 40px rgba(0, 0, 0, 0.6);
+            /* Drop shadow */
+            display: flex;
+            padding: 20px 10px 20px 25px;
+            /* Leather Grain Texture */
+            background-image: url("data:image/svg+xml,%3Csvg width='200' height='200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
+        }
+
+        /* Stitching Effect */
+        .notebook::before {
+            content: '';
+            position: absolute;
+            top: 10px;
+            bottom: 10px;
+            left: 10px;
+            right: 10px;
+            border: 2px dashed rgba(255, 255, 255, 0.3);
+            border-radius: 10px 20px 20px 10px;
+            pointer-events: none;
+        }
+
+        /* Paper Pages */
+        .page {
+            flex: 1;
+            background-color: var(--paper-color);
+            box-shadow:
+                inset 5px 0 10px rgba(0, 0, 0, 0.1),
+                /* Spine shadow inside paper */
+                2px 0 5px rgba(0, 0, 0, 0.2);
+            /* Page depth */
+            border-radius: 5px 15px 15px 5px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Loose paper edge effect manually suggested by slight rotation or layered pseudo elements? 
+           Keeping it simple for now, maybe add a "stacked pages" look via box-shadow on .page later if needed. */
+
+        /* Paper Lines & Margin */
+        .paper-content {
+            width: 100%;
+            height: 100%;
+            background-image:
+                linear-gradient(90deg, transparent 59px, var(--margin-color) 60px, transparent 61px),
+                /* Red Margin */
+                repeating-linear-gradient(transparent 0px, transparent 39px, var(--line-color) 40px);
+            /* Blue Lines */
+            background-attachment: local;
+            padding: 40px 20px 20px 80px;
+            /* Padding left accounts for margin */
+            overflow-y: auto;
+            /* Scrollbar styling for webkit */
+            scrollbar-width: thin;
+            scrollbar-color: rgba(0, 0, 0, 0.2) transparent;
+        }
+
+        .paper-content::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .paper-content::-webkit-scrollbar-thumb {
+            background-color: rgba(0, 0, 0, 0.2);
+            border-radius: 3px;
+        }
+
+        h1 {
+            border-bottom: 2px solid var(--ink-color);
+            margin: 0 0 20px -60px;
+            /* Pull left into margin */
+            padding-bottom: 5px;
+            font-size: 2.5rem;
+            color: var(--ink-color);
+            text-align: center;
+            transform: rotate(-2deg);
+        }
+
+        /* Input Area (Top) */
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            position: relative;
+            margin-left: -40px;
+        }
+
+        input[type="text"] {
+            background: transparent;
+            border: none;
+            border-bottom: 2px solid transparent;
+            font-family: 'Caveat', cursive;
+            font-size: 1.8rem;
+            color: #333;
+            width: 100%;
+            padding: 5px;
+            transition: border-color 0.3s;
+        }
+
+        input[type="text"]:focus {
+            border-bottom-color: rgba(93, 64, 55, 0.4);
+        }
+
+        input[type="text"]::placeholder {
+            color: rgba(0, 0, 0, 0.3);
+        }
+
+        button.add-btn {
+            background: none;
+            border: none;
+            font-size: 2rem;
+            color: var(--leather-color);
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        button.add-btn:hover {
+            transform: scale(1.1) rotate(5deg);
+        }
+
+        /* Todo List */
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        li {
+            display: flex;
+            align-items: flex-start;
+            /* Align to top so multiline text sits right */
+            font-size: 1.8rem;
+            line-height: 40px;
+            /* Match background line height */
+            color: var(--ink-color);
+            cursor: pointer;
+            position: relative;
+            margin-left: -40px;
+            /* Align bullets/checks into margin */
+            padding-left: 10px;
+            transition: opacity 0.3s;
+        }
+
+        /* Custom Checkbox (drawn box) */
+        .check-box {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--ink-color);
+            margin-top: 10px;
+            /* Center vertically relative to line-height 40px roughly */
+            margin-right: 15px;
+            flex-shrink: 0;
+            position: relative;
+            transform: rotate(-5deg);
+            border-radius: 2px;
+            transition: all 0.2s ease;
+        }
+
+        /* Checked State */
+        li.done {
+            color: rgba(44, 62, 80, 0.5);
+            text-decoration: none;
+            /* We use custom strikethrough */
+        }
+
+        li.done .check-box::after {
+            content: '✓';
+            position: absolute;
+            font-size: 2rem;
+            top: -15px;
+            left: 0;
+            color: var(--wood-dark);
+            transform: rotate(5deg);
+            font-weight: bold;
+        }
+
+        /* Realistic Strikethrough */
+        li.done .text {
+            position: relative;
+        }
+
+        li.done .text::after {
+            content: '';
+            position: absolute;
+            left: -5%;
+            top: 50%;
+            width: 110%;
+            height: 2px;
+            background: rgba(44, 62, 80, 0.8);
+            transform: rotate(-1deg);
+            box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+            animation: strike 0.3s ease-out forwards;
+        }
+
+        @keyframes strike {
+            0% {
+                width: 0;
+            }
+
+            100% {
+                width: 110%;
+            }
+        }
+
+        /* Delete Button */
+        button.delete-btn {
+            margin-left: auto;
+            background: none;
+            border: none;
+            font-family: 'Caveat', cursive;
+            font-size: 1.5rem;
+            color: rgba(229, 115, 115, 0);
+            /* Hidden by default */
+            cursor: pointer;
+            transition: color 0.2s;
+        }
+
+        li:hover button.delete-btn {
+            color: rgba(229, 115, 115, 0.8);
+        }
+
+        button.delete-btn:hover {
+            color: #d32f2f !important;
+            transform: scale(1.2);
+        }
+
+        /* Tape / Sticky Note (Bonus decoration) */
+        .tape {
+            position: absolute;
+            top: 20px;
+            right: -10px;
+            width: 120px;
+            height: 35px;
+            background-color: rgba(255, 255, 255, 0.4);
+            transform: rotate(30deg);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+            z-index: 10;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="notebook">
+        <div class="page">
+            <div class="tape"></div>
+            <div class="paper-content">
+                <h1>Todos</h1>
+
+                <div class="input-group">
+                    <input type="text" id="new-task" placeholder="Write something..."
+                        onkeypress="handleKeyPress(event)">
+                    <button class="add-btn" onclick="addTask()">+</button>
+                </div>
+
+                <ul id="task-list">
+                    <!-- Tasks will appear here -->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const taskList = document.getElementById('task-list');
+        const input = document.getElementById('new-task');
+
+        // Load tasks from storage
+        let tasks = JSON.parse(localStorage.getItem('myTasks')) || [
+            { text: "Buy milk", done: false },
+            { text: "Walk the dog", done: true },
+            { text: "Finish project", done: false }
+        ];
+
+        function renderTasks() {
+            taskList.innerHTML = '';
+            tasks.forEach((task, index) => {
+                const li = document.createElement('li');
+                if (task.done) li.classList.add('done');
+
+                li.innerHTML = `
+                    <div class="check-box" onclick="toggleTask(${index})"></div>
+                    <span class="text" onclick="toggleTask(${index})">${task.text}</span>
+                    <button class="delete-btn" onclick="deleteTask(${index})">✕</button>
+                `;
+                taskList.appendChild(li);
+            });
+            localStorage.setItem('myTasks', JSON.stringify(tasks));
+        }
+
+        function addTask() {
+            const text = input.value.trim();
+            if (text) {
+                tasks.push({ text, done: false });
+                input.value = '';
+                renderTasks();
+            }
+            input.focus();
+        }
+
+        function toggleTask(index) {
+            tasks[index].done = !tasks[index].done;
+            renderTasks();
+        }
+
+        function deleteTask(index) {
+            if (confirm('Scratch this off effectively?')) {
+                tasks.splice(index, 1);
+                renderTasks();
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        }
+
+        // Initial Render
+        renderTasks();
+
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>赣鄱非遗 | Ganpo Intangible Cultural Heritage</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ma+Shan+Zheng&family=Noto+Serif+SC:wght@300;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #F2F0EB; /* Rice paper off-white */
+            --ink-color: #1A1A1D; /* Deep ink black */
+            --accent-color: #BF242A; /* Cinnabar Red */
+            --secondary-color: #5D6D7E; /* Slate Grey for mountains/secondary */
+            --paper-grain: url('data:image/svg+xml;base64,PHN2ZyB2aWV3Qm94PSIwIDAgMjAwIDIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZnmlsdGVyIGlkPSJub2lzZSI+PHZlVHVyYnVsZW5jZSB0eXBlPSJmcmFjdGFsTm9pc2UiIGJhc2BGcmVxdWVuY3k9IjAuNjUiIG51bU9jdGF2ZXM9IjMiIHN0aXRjaFRpbGVzPSJzdGl0Y2giLz48L2ZpbHRlcj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWx0ZXI9InVybCgjbm9pc2UpIiBvcGFjaXR5PSIwLjAzIi8+PC9zdmc+');
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Noto Serif SC', 'PingFang SC', serif;
+            background-color: var(--bg-color);
+            background-image: var(--paper-grain);
+            color: var(--ink-color);
+            height: 100vh;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+        }
+
+        /* Abstract Landscape / Ink Wash Effects */
+        .landscape-layer {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 40%;
+            background: linear-gradient(to top, rgba(93, 109, 126, 0.1) 0%, transparent 100%);
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .ink-splash {
+            position: absolute;
+            width: 800px;
+            height: 800px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(200, 200, 200, 0.1) 0%, transparent 70%);
+            top: -200px;
+            right: -200px;
+            filter: blur(60px);
+            z-index: 0;
+            animation: breathe 10s infinite alternate ease-in-out;
+        }
+
+        /* Main Container */
+        .container {
+            z-index: 2;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            width: 100%;
+            max-width: 1200px;
+            height: 80vh;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Vertical Title Section (Center/Right) */
+        .title-section {
+            grid-column: 2;
+            display: flex;
+            flex-direction: row-reverse; /* Traditional right-to-left vertical text flow */
+            gap: 4rem;
+            align-items: flex-start;
+            height: 60%;
+            padding: 0 2rem;
+            border-right: 1px solid rgba(26, 26, 29, 0.1); /* Subtle divider */
+        }
+
+        .main-title {
+            writing-mode: vertical-rl;
+            font-size: 5rem;
+            font-weight: 700;
+            letter-spacing: 0.5rem;
+            line-height: 1.2;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: verticalSlideIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0.3s;
+            text-shadow: 4px 4px 0 rgba(0,0,0,0.05);
+        }
+
+        .main-title .highlight {
+            color: var(--accent-color);
+            font-family: 'Ma Shan Zheng', cursive; /* Calligraphy style */
+        }
+
+        .subtitle {
+            writing-mode: vertical-rl;
+            font-size: 1.2rem;
+            letter-spacing: 0.3rem;
+            color: var(--secondary-color);
+            opacity: 0;
+            transform: translateY(20px);
+            animation: verticalSlideIn 1.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+            animation-delay: 0.8s;
+            border-left: 1px solid var(--accent-color); /* Red line accent */
+            padding-left: 1rem;
+        }
+
+        /* Left Side Call to Action */
+        .cta-section {
+            grid-column: 1;
+            padding: 0 4rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-start;
+            height: 60%;
+            opacity: 0;
+            animation: fadeIn 2s ease-out forwards;
+            animation-delay: 1.5s;
+        }
+
+        .english-title {
+            font-family: 'Noto Serif SC', serif;
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2rem;
+            margin-bottom: 2rem;
+            color: var(--secondary-color);
+        }
+
+        .enter-btn {
+            position: relative;
+            background: transparent;
+            color: var(--ink-color);
+            border: 1px solid var(--ink-color);
+            padding: 1rem 3rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            overflow: hidden;
+            font-family: 'Noto Serif SC', serif;
+            letter-spacing: 0.2em;
+        }
+
+        .enter-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: var(--ink-color);
+            transform: scaleX(0);
+            transform-origin: right;
+            transition: transform 0.4s cubic-bezier(0.77, 0, 0.175, 1);
+            z-index: -1;
+        }
+
+        .enter-btn:hover {
+            color: var(--bg-color);
+            border-color: var(--ink-color);
+        }
+
+        .enter-btn:hover::before {
+            transform: scaleX(1);
+            transform-origin: left;
+        }
+
+        /* Stamp/Seal Element */
+        .seal {
+            position: absolute;
+            bottom: 10%;
+            right: 10%;
+            width: 80px;
+            height: 80px;
+            border: 3px solid var(--accent-color);
+            color: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Ma Shan Zheng', cursive;
+            font-size: 2rem;
+            line-height: 1;
+            border-radius: 4px;
+            opacity: 0;
+            transform: scale(1.2) rotate(-5deg);
+            animation: sealStamp 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            animation-delay: 2s;
+            box-shadow: 0 0 0 4px var(--bg-color), inset 0 0 0 2px var(--bg-color);
+            cursor: default;
+            user-select: none;
+        }
+        
+        .seal span {
+            display: block;
+            writing-mode: vertical-rl;
+            width: 100%;
+            text-align: center;
+        }
+
+        /* Animations */
+        @keyframes verticalSlideIn {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            to { opacity: 1; }
+        }
+
+        @keyframes sealStamp {
+            to {
+                opacity: 0.8;
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @keyframes breathe {
+            form { transform: scale(1); opacity: 0.1; }
+            to { transform: scale(1.1); opacity: 0.15; }
+        }
+
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .container {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                height: 100vh;
+            }
+
+            .title-section {
+                flex-direction: column; /* Back to horizontal-ish stack, but still vertical text? No, maybe horizontal text for mobile */
+                height: auto;
+                border-right: none;
+                align-items: center;
+                gap: 1rem;
+                margin-bottom: 3rem;
+            }
+
+            .main-title {
+                writing-mode: horizontal-tb;
+                font-size: 3rem;
+            }
+
+            .subtitle {
+                writing-mode: horizontal-tb;
+                border-left: none;
+                border-top: 1px solid var(--accent-color);
+                padding-left: 0;
+                padding-top: 0.5rem;
+                font-size: 1rem;
+            }
+
+            .cta-section {
+                padding: 0;
+                align-items: center;
+                height: auto;
+            }
+
+            .seal {
+                bottom: 5%;
+                right: 5%;
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="ink-splash"></div>
+    <div class="landscape-layer"></div>
+
+    <div class="container">
+        <!-- Action Area -->
+        <div class="cta-section">
+            <div class="english-title">Ganpo Intangible Cultural Heritage</div>
+            <button class="enter-btn" onclick="enterSystem()">进入探索 EXPLORE</button>
+        </div>
+
+        <!-- Title Area -->
+        <div class="title-section">
+            <h1 class="main-title">赣鄱<span class="highlight">非遗</span></h1>
+            <p class="subtitle">传承千年文脉 · 守护精神家园</p>
+        </div>
+        
+        <!-- Empty right column/space for balance -->
+        <div></div>
+    </div>
+
+    <!-- Decorative Seal -->
+    <div class="seal">
+        <span>传承</span>
+    </div>
+
+    <script>
+        function enterSystem() {
+            // Animation for exit
+            document.body.style.transition = 'opacity 0.8s ease';
+            document.body.style.opacity = '0';
+            
+            setTimeout(() => {
+                // In a real app, this would route to the dashboard
+                // For this demo, we'll just log or reload
+                console.log("Navigating to home...");
+                // window.location.href = '/home'; 
+                alert("即将进入赣鄱非遗知识库系统...");
+                location.reload(); 
+            }, 800);
+        }
+
+        // Add slight parallax effect on mouse move
+        document.addEventListener('mousemove', (e) => {
+            const x = (window.innerWidth - e.pageX * 2) / 100;
+            const y = (window.innerHeight - e.pageY * 2) / 100;
+            
+            const splash = document.querySelector('.ink-splash');
+            if(splash) {
+                splash.style.transform = `translate(${x}px, ${y}px)`;
+            }
+        });
+    </script>
+</body>
+</html>
